@@ -1,157 +1,133 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>RAF Translator</title>
 
 <style>
 body{
-font-family:Arial,sans-serif;
-background:#0d1117;
+font-family:Arial;
+background:#101820;
 color:white;
 text-align:center;
 padding:20px;
 }
+
 textarea{
 width:90%;
 height:120px;
 font-size:20px;
 padding:10px;
+}
+
+button{
+padding:12px 25px;
 margin:10px;
-}
-select,button{
-padding:10px;
 font-size:18px;
-margin:5px;
+cursor:pointer;
 }
+
 #output{
 margin-top:20px;
-font-size:26px;
+font-size:24px;
 color:#00ff99;
-word-wrap:break-word;
 }
 </style>
 
 </head>
+
 <body>
 
-<h1>RAF Language Translator</h1>
+<h1>RAF ↔ English Translator</h1>
 
-<textarea id="input" placeholder="Write here..."></textarea>
-
-<br>
-
-<select id="from">
-<option>English</option>
-<option>RAF</option>
-<option>বাংলা</option>
-</select>
-
-➡
-
-<select id="to">
-<option>RAF</option>
-<option>English</option>
-<option>বাংলা</option>
-</select>
+<textarea id="input" placeholder="Enter text"></textarea>
 
 <br>
 
-<button onclick="translateText()">Translate</button>
+<button onclick="englishToRAF()">English → RAF</button>
+
+<button onclick="rafToEnglish()">RAF → English</button>
 
 <div id="output"></div>
 
 <script>
 
-// English ↔ RAF
-const eng={
-A:"0",B:"1",C:"2",D:"3",E:"4",F:"5",
-G:"6",H:"7",I:"8",J:"9",
-K:"√10",L:"√11",M:"√12",N:"√13",
-O:"√14",P:"√15",Q:"√16",R:"√17",
-S:"√18",T:"√19",U:"√20",
-V:"√21",W:"√22",X:"√23",
-Y:"√24",Z:"√25"
+const engToRAF={
+A:"0",
+B:"1",
+C:"2",
+D:"3",
+E:"4",
+F:"5",
+G:"6",
+H:"7",
+I:"8",
+J:"9",
+K:"√10",
+L:"√11",
+M:"√12",
+N:"√13",
+O:"√14",
+P:"√15",
+Q:"√16",
+R:"√17",
+S:"√18",
+T:"√19",
+U:"√20",
+V:"√21",
+W:"√22",
+X:"√23",
+Y:"√24",
+Z:"√25"
 };
 
-const raf={};
-for(let k in eng){
-raf[eng[k]]=k;
+const rafToEng={};
+
+for(let key in engToRAF){
+rafToEng[engToRAF[key]]=key;
 }
 
-// English ↔ বাংলা (প্রাথমিক উদাহরণ)
-const bangla={
-HELLO:"হ্যালো",
-HI:"হাই",
-I:"আমি",
-YOU:"তুমি",
-LOVE:"ভালোবাসি",
-BOOK:"বই",
-WATER:"পানি",
-FOOD:"খাবার",
-YES:"হ্যাঁ",
-NO:"না"
-};
+function englishToRAF(){
 
-const english={};
-for(let k in bangla){
-english[bangla[k]]=k;
-}
+let text=document.getElementById("input").value.toUpperCase();
 
-function englishToRAF(text){
 let out="";
-for(let c of text.toUpperCase()){
-if(eng[c]) out+=eng[c]+" ";
-else out+=c;
+
+for(let ch of text){
+
+if(engToRAF[ch]){
+out+=engToRAF[ch]+" ";
 }
-return out;
+else{
+out+=ch;
 }
 
-function rafToEnglish(text){
+}
+
+document.getElementById("output").innerHTML=out;
+
+}
+
+function rafToEnglish(){
+
+let text=document.getElementById("input").value.trim();
+
+let parts=text.split(/\s+/);
+
 let out="";
-let arr=text.trim().split(/\s+/);
-arr.forEach(x=>{
-out+=raf[x] ? raf[x] : x+" ";
-});
-return out;
+
+for(let p of parts){
+
+if(rafToEng[p]){
+out+=rafToEng[p];
+}
+else{
+out+=p+" ";
 }
 
-function translateText(){
-
-let input=document.getElementById("input").value;
-let from=document.getElementById("from").value;
-let to=document.getElementById("to").value;
-
-let result="";
-
-if(from=="English" && to=="RAF")
-result=englishToRAF(input);
-
-else if(from=="RAF" && to=="English")
-result=rafToEnglish(input);
-
-else if(from=="English" && to=="বাংলা")
-result=bangla[input.toUpperCase()] || "Not Found";
-
-else if(from=="বাংলা" && to=="English")
-result=english[input] || "Not Found";
-
-else if(from=="বাংলা" && to=="RAF"){
-let e=english[input];
-if(e) result=englishToRAF(e);
-else result="Not Found";
 }
 
-else if(from=="RAF" && to=="বাংলা"){
-let e=rafToEnglish(input);
-result=bangla[e] || "Not Found";
-}
-
-else
-result=input;
-
-document.getElementById("output").innerHTML=result;
+document.getElementById("output").innerHTML=out;
 
 }
 
