@@ -41,6 +41,13 @@
             box-shadow: 0 4px 10px rgba(0,0,0,0.1);
             width: 100%;
             max-width: 600px;
+            display: flex;
+            flex-direction: column;
+            min-height: 85vh;
+        }
+
+        .content-wrap {
+            flex: 1;
         }
 
         .header {
@@ -128,47 +135,74 @@
             color: #888;
             margin-top: 10px;
         }
+
+        /* Footer Styling */
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            padding-top: 15px;
+            border-top: 1px solid var(--border-color);
+            font-size: 14px;
+            color: var(--text-color);
+        }
+
+        .footer a {
+            color: #2196F3;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
     </style>
 </head>
 <body data-theme="dark">
 
     <div class="container">
-        <div class="header">
-            <h2>RAF Translator</h2>
-            <button class="theme-btn" onclick="toggleTheme()">🌓 Theme</button>
-        </div>
+        <div class="content-wrap">
+            <div class="header">
+                <h2>RAF Translator</h2>
+                <button class="theme-btn" onclick="toggleTheme()">🌓 Theme</button>
+            </div>
 
-        <div class="controls">
-            <select id="langFrom">
-                <option value="English">English</option>
-                <option value="Abdullah">RAF (Abdullah)</option>
-                <option value="Fuad">RAF (Fuad)</option>
-                <option value="Ruhul">RAF (Ruhul)</option>
-            </select>
+            <div class="controls">
+                <select id="langFrom">
+                    <option value="English">English</option>
+                    <option value="Abdullah">RAF (Abdullah)</option>
+                    <option value="Fuad">RAF (Fuad)</option>
+                    <option value="Ruhul">RAF (Ruhul)</option>
+                </select>
+                
+                <button class="swap-btn" onclick="swapLanguages()">⇄</button>
+                
+                <select id="langTo">
+                    <option value="Abdullah" selected>RAF (Abdullah)</option> 
+                    <option value="Fuad">RAF (Fuad)</option>
+                    <option value="Ruhul">RAF (Ruhul)</option>
+                    <option value="English">English</option>
+                </select>
+            </div>
+
+            <textarea id="inputText" placeholder="Type here..."></textarea>
             
-            <button class="swap-btn" onclick="swapLanguages()">⇄</button>
+            <div class="action-buttons">
+                <button class="btn" onclick="translateText()">Translate</button>
+            </div>
+
+            <textarea id="outputText" placeholder="Translation will appear here..." readonly style="margin-top: 15px;"></textarea>
             
-            <select id="langTo">
-                <option value="Abdullah" selected>RAF (Abdullah)</option> <option value="Fuad">RAF (Fuad)</option>
-                <option value="Ruhul">RAF (Ruhul)</option>
-                <option value="English">English</option>
-            </select>
+            <div class="action-buttons">
+                <button class="btn copy" onclick="copyText()">📋 Copy Output</button>
+            </div>
+
+            <div class="note">
+                * Note: RAF language theke English e translate korar shomoy protiti okkhor (letter) er majhkhan e ekta kore <b>Space</b> dite hobe. Example: "√10 √11"
+            </div>
         </div>
 
-        <textarea id="inputText" placeholder="Type here..."></textarea>
-        
-        <div class="action-buttons">
-            <button class="btn" onclick="translateText()">Translate</button>
-        </div>
-
-        <textarea id="outputText" placeholder="Translation will appear here..." readonly style="margin-top: 15px;"></textarea>
-        
-        <div class="action-buttons">
-            <button class="btn copy" onclick="copyText()">📋 Copy Output</button>
-        </div>
-
-        <div class="note">
-            * Note: RAF language theke English e translate korar shomoy protiti okkhor (letter) er majhkhan e ekta kore <b>Space</b> dite hobe. Example: "√10 √11"
+        <div class="footer">
+            Created by <a href="https://www.facebook.com/share/1Bk42FwNzy/" target="_blank">ABDULLAH</a>
         </div>
     </div>
 
