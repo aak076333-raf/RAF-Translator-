@@ -1,137 +1,293 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>RAF Translator</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RAF Secret Translator</title>
+    <style>
+        /* CSS for Styling and Responsiveness */
+        :root {
+            --bg-color: #f4f4f9;
+            --text-color: #333;
+            --container-bg: #fff;
+            --border-color: #ccc;
+            --btn-bg: #4CAF50;
+            --btn-text: #fff;
+        }
 
-<style>
-body{
-font-family:Arial;
-background:#101820;
-color:white;
-text-align:center;
-padding:20px;
-}
+        [data-theme="dark"] {
+            --bg-color: #121212;
+            --text-color: #e0e0e0;
+            --container-bg: #1e1e1e;
+            --border-color: #444;
+            --btn-bg: #388E3C;
+        }
 
-textarea{
-width:90%;
-height:120px;
-font-size:20px;
-padding:10px;
-}
+        body {
+            font-family: Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            transition: background 0.3s, color 0.3s;
+        }
 
-button{
-padding:12px 25px;
-margin:10px;
-font-size:18px;
-cursor:pointer;
-}
+        .container {
+            background-color: var(--container-bg);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 600px;
+        }
 
-#output{
-margin-top:20px;
-font-size:24px;
-color:#00ff99;
-}
-</style>
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
 
+        .theme-btn {
+            background: none;
+            border: 1px solid var(--border-color);
+            color: var(--text-color);
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .controls {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 15px;
+            gap: 10px;
+        }
+
+        select {
+            flex: 1;
+            padding: 10px;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            border: 1px solid var(--border-color);
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        .swap-btn {
+            background-color: var(--btn-bg);
+            color: var(--btn-text);
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 18px;
+        }
+
+        textarea {
+            width: 100%;
+            height: 100px;
+            padding: 10px;
+            box-sizing: border-box;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            border: 1px solid var(--border-color);
+            border-radius: 5px;
+            margin-bottom: 10px;
+            font-size: 16px;
+            resize: vertical;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn {
+            flex: 1;
+            background-color: var(--btn-bg);
+            color: var(--btn-text);
+            border: none;
+            padding: 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        .btn.copy {
+            background-color: #2196F3;
+        }
+
+        .note {
+            font-size: 12px;
+            color: #888;
+            margin-top: 10px;
+        }
+    </style>
 </head>
+<body data-theme="dark">
 
-<body>
+    <div class="container">
+        <div class="header">
+            <h2>RAF Translator</h2>
+            <button class="theme-btn" onclick="toggleTheme()">🌓 Theme</button>
+        </div>
 
-<h1>RAF ↔ English Translator</h1>
+        <div class="controls">
+            <select id="langFrom">
+                <option value="English">English</option>
+                <option value="Abdullah">RAF (Abdullah)</option>
+                <option value="Fuad">RAF (Fuad)</option>
+                <option value="Ruhul">RAF (Ruhul)</option>
+            </select>
+            
+            <button class="swap-btn" onclick="swapLanguages()">⇄</button>
+            
+            <select id="langTo">
+                <option value="Abdullah" selected>RAF (Abdullah)</option> <option value="Fuad">RAF (Fuad)</option>
+                <option value="Ruhul">RAF (Ruhul)</option>
+                <option value="English">English</option>
+            </select>
+        </div>
 
-<textarea id="input" placeholder="Enter text"></textarea>
+        <textarea id="inputText" placeholder="Type here..."></textarea>
+        
+        <div class="action-buttons">
+            <button class="btn" onclick="translateText()">Translate</button>
+        </div>
 
-<br>
+        <textarea id="outputText" placeholder="Translation will appear here..." readonly style="margin-top: 15px;"></textarea>
+        
+        <div class="action-buttons">
+            <button class="btn copy" onclick="copyText()">📋 Copy Output</button>
+        </div>
 
-<button onclick="englishToRAF()">English → RAF</button>
+        <div class="note">
+            * Note: RAF language theke English e translate korar shomoy protiti okkhor (letter) er majhkhan e ekta kore <b>Space</b> dite hobe. Example: "√10 √11"
+        </div>
+    </div>
 
-<button onclick="rafToEnglish()">RAF → English</button>
+    <script>
+        // Unicode superscripts dictionary for real math power look
+        const superscripts = {
+            '0': '⁰', '1': '¹', '2': '²', '3': '³', '4': '⁴',
+            '5': '⁵', '6': '⁶', '7': '⁷', '8': '⁸', '9': '⁹'
+        };
 
-<div id="output"></div>
+        const mapToRAF = { Ruhul: {}, Fuad: {}, Abdullah: {} };
+        const mapToEng = { Ruhul: {}, Fuad: {}, Abdullah: {} };
 
-<script>
+        for (let i = 0; i < 26; i++) {
+            let char = String.fromCharCode(65 + i); // A-Z
+            
+            let ruhulVal, fuadVal, abdullahVal;
 
-const engToRAF={
-A:"0",
-B:"1",
-C:"2",
-D:"3",
-E:"4",
-F:"5",
-G:"6",
-H:"7",
-I:"8",
-J:"9",
-K:"√10",
-L:"√11",
-M:"√12",
-N:"√13",
-O:"√14",
-P:"√15",
-Q:"√16",
-R:"√17",
-S:"√18",
-T:"√19",
-U:"√20",
-V:"√21",
-W:"√22",
-X:"√23",
-Y:"√24",
-Z:"√25"
-};
+            if (i <= 9) { // For A to J
+                ruhulVal = fuadVal = abdullahVal = i.toString();
+            } else { // For K to Z
+                let numStr = i.toString(); // eg: '10', '15', '25'
+                
+                // Ruhul: uses simple quotes '10'
+                ruhulVal = `'${numStr}'`;
+                
+                // Fuad: base first digit, power second digit without caret symbol (1⁰, 1⁵, 2⁵)
+                let firstDigit = numStr[0];
+                let secondDigit = numStr[1];
+                fuadVal = firstDigit + superscripts[secondDigit];
+                
+                // Abdullah: uses square root √10
+                abdullahVal = `√${numStr}`;
+            }
 
-const rafToEng={};
+            // Populate Dictionaries
+            mapToRAF.Ruhul[char] = ruhulVal;
+            mapToRAF.Fuad[char] = fuadVal;
+            mapToRAF.Abdullah[char] = abdullahVal;
 
-for(let key in engToRAF){
-rafToEng[engToRAF[key]]=key;
-}
+            mapToEng.Ruhul[ruhulVal] = char;
+            mapToEng.Fuad[fuadVal] = char;
+            mapToEng.Abdullah[abdullahVal] = char;
+        }
 
-function englishToRAF(){
+        function translateText() {
+            let from = document.getElementById("langFrom").value;
+            let to = document.getElementById("langTo").value;
+            let text = document.getElementById("inputText").value.trim().toUpperCase();
+            
+            if (!text) {
+                document.getElementById("outputText").value = "";
+                return;
+            }
 
-let text=document.getElementById("input").value.toUpperCase();
+            if (from === to) {
+                document.getElementById("outputText").value = text;
+                return;
+            }
 
-let out="";
+            let result = "";
 
-for(let ch of text){
+            if (from === "English") {
+                let words = text.split(" ");
+                let translatedWords = words.map(word => {
+                    return word.split('').map(char => mapToRAF[to][char] || char).join(' ');
+                });
+                result = translatedWords.join('   '); 
+            } 
+            else if (to === "English") {
+                let tempWords = text.split("  ");
+                let fin = tempWords.map(w => {
+                    return w.trim().split(/\s+/).map(c => mapToEng[from][c] || c).join('');
+                });
+                result = fin.join(' ');
+            } 
+            else {
+                let tempEngWords = text.split("  ").map(w => {
+                    return w.trim().split(/\s+/).map(c => mapToEng[from][c] || c).join('');
+                }).join(' ');
 
-if(engToRAF[ch]){
-out+=engToRAF[ch]+" ";
-}
-else{
-out+=ch;
-}
+                let finalWords = tempEngWords.split(" ");
+                let translatedWords = finalWords.map(word => {
+                    return word.split('').map(char => mapToRAF[to][char] || char).join(' ');
+                });
+                result = translatedWords.join('   ');
+            }
 
-}
+            document.getElementById("outputText").value = result;
+        }
 
-document.getElementById("output").innerHTML=out;
+        function swapLanguages() {
+            let from = document.getElementById("langFrom");
+            let to = document.getElementById("langTo");
+            let temp = from.value;
+            from.value = to.value;
+            to.value = temp;
+            
+            let inText = document.getElementById("inputText").value;
+            let outText = document.getElementById("outputText").value;
+            document.getElementById("inputText").value = outText;
+            document.getElementById("outputText").value = "";
+        }
 
-}
+        function copyText() {
+            let outText = document.getElementById("outputText");
+            outText.select();
+            document.execCommand("copy");
+            alert("Translation Copied!");
+        }
 
-function rafToEnglish(){
-
-let text=document.getElementById("input").value.trim();
-
-let parts=text.split(/\s+/);
-
-let out="";
-
-for(let p of parts){
-
-if(rafToEng[p]){
-out+=rafToEng[p];
-}
-else{
-out+=p+" ";
-}
-
-}
-
-document.getElementById("output").innerHTML=out;
-
-}
-
-</script>
-
+        function toggleTheme() {
+            let body = document.body;
+            if (body.getAttribute("data-theme") === "dark") {
+                body.removeAttribute("data-theme");
+            } else {
+                body.setAttribute("data-theme", "dark");
+            }
+        }
+    </script>
 </body>
 </html>
